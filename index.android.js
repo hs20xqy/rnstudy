@@ -191,6 +191,13 @@ class MyTouchableDemo extends Component {
       eventName: ''
     };
   }
+  _appendEvent(eName){
+    let limit = 6;
+    let eventLog = this.state.eventLog.slice(0, limit - 1);
+    eventLog.unshift(eventName);
+    this.setState(eventLog);
+    this.setState({eventName:eName});
+  }
   render(){
     let text = this.state.eventName;
     return(
@@ -231,13 +238,6 @@ class MyTouchableDemo extends Component {
         </View>
       </View>
     );
-  }
-  _appendEvent(eName){
-    let limit = 6;
-    let eventLog = this.state.eventLog.slice(0, limit - 1);
-    eventLog.unshift(eventName);
-    this.setState(eventLog);
-    this.setState({eventName:eName});
   }
 }
 
