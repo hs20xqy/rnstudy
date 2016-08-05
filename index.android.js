@@ -18,7 +18,8 @@ import {
   ViewPagerAndroid,
   TouchableHighlight,
   TouchableOpacity,
-  ListView
+  ListView,
+  Image
 } from 'react-native';
 
 /** DrawerLayoutAndroid Test */
@@ -247,23 +248,49 @@ class MyTouchableDemo extends Component {
   }
 }
 
+var THUMB_URLS = [
+  require('./images/like.png'),
+  require('./images/dislike.png'),
+  require('./images/call.png'),
+  require('./images/fist.png'),
+  require('./images/bandaged.png'),
+  require('./images/flowers.png'),
+  require('./images/heart.png'),
+  require('./images/liking.png'),
+  require('./images/party.png'),
+  require('./images/poke.png'),
+  require('./images/superlike.png'),
+  require('./images/victory.png'),
+  ];
+
 class MyListView extends Component {
   constructor(){
     super();
     let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      dataSource: ds.cloneWithRows(['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'])
+      dataSource: ds.cloneWithRows([
+        'row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8', 'row9', 'row10', 'row11', 'row12'
+        ])
     }
   }
-  show(rowData){
-    return <Text>{rowData}</Text>
+  _renderRow(rowData, sectionID, rowID){
+    let imgSource = THUMB_URLS[rowID];
+    return (
+      <TouchableOpacity>
+        <View style={{flex:1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <Image source={imgSource} style={{height: 80, width: 80}}/>
+          <Text style={{fontSize: 16}}>我是测试行号哦!{rowID}</Text>
+        </View>
+      </TouchableOpacity>
+    );
   }
   render(){
     return(
       <View>
         <ListView 
+          showsVerticalScrollIndicator={true}
           dataSource={this.state.dataSource}
-          renderRow={this.show}/>
+          renderRow={this._renderRow}/>
       </View>
     );
   }
@@ -272,7 +299,7 @@ class MyListView extends Component {
 class rnstudy extends Component {
   render() {
     return (
-      <MyTouchableDemo />
+      <MyListView />
     );
   }
 }
