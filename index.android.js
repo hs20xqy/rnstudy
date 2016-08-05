@@ -17,7 +17,8 @@ import {
   Picker,
   ViewPagerAndroid,
   TouchableHighlight,
-  TouchableOpacity
+  TouchableOpacity,
+  ListView
 } from 'react-native';
 
 /** DrawerLayoutAndroid Test */
@@ -188,18 +189,20 @@ class MyTouchableDemo extends Component {
   constructor(){
     super();
     this.state = {
-      eventName: ''
+      eventName: '',
+      eventLog:[]
     };
   }
-  _appendEvent(eName){
+
+  _appendEvent (eName) {
     let limit = 6;
     let eventLog = this.state.eventLog.slice(0, limit - 1);
-    eventLog.unshift(eventName);
+    eventLog.unshift(eName);
     this.setState(eventLog);
-    this.setState({eventName:eName});
-  }
+    this.setState({eventLog: eventLog});
+  };
+
   render(){
-    let text = this.state.eventName;
     return(
       <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
         <View style={{ alignItems: 'center'}}>
@@ -228,14 +231,39 @@ class MyTouchableDemo extends Component {
               activeOpacity={0.6} 
               underlayColor="#CD6889"
               style={{marginTop: 10, borderRadius: 5, backgroundColor: '#CFCFCF', padding: 5}}
-              onPress={this._appendEvent('press')}>
+              onPress={() => this._appendEvent('press')}
+              onPressIn={() => this._appendEvent('pressIn')}
+              onLongPress={() => this._appendEvent('longPress')}
+              onPressOut={() => this._appendEvent('pressOut')}>
               <Text style={{fontSize: 16}}>**点我高亮**</Text>
             </TouchableHighlight>
           </View>
-          <View style={{flex: 1, alignItems: 'center'}}>
-            <Text>{text}</Text>
+          <View style={{flex: 1,justifyContent: 'center', alignItems: 'center'}}>
+            <Text>{this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}</Text>
           </View>
         </View>
+      </View>
+    );
+  }
+}
+
+class MyListView extends Component {
+  constructor(){
+    super();
+    let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.state = {
+      dataSource: ds.cloneWithRows(['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'])
+    }
+  }
+  show(rowData){
+    return <Text>{rowData}</Text>
+  }
+  render(){
+    return(
+      <View>
+        <ListView 
+          dataSource={this.state.dataSource}
+          renderRow={this.show}/>
       </View>
     );
   }
