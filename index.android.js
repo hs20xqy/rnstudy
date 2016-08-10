@@ -19,7 +19,10 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   ListView,
-  Image
+  Image,
+  PullToRefreshViewAndroid,
+  RefreshControl,
+  WebView
 } from 'react-native';
 
 /** DrawerLayoutAndroid Test */
@@ -248,6 +251,7 @@ class MyTouchableDemo extends Component {
   }
 }
 
+/** MyListView Test */
 var THUMB_URLS = [
   require('./images/like.png'),
   require('./images/dislike.png'),
@@ -263,49 +267,143 @@ var THUMB_URLS = [
   require('./images/victory.png'),
   ];
 
+
 class MyListView extends Component {
   constructor(){
     super();
     let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      dataSource: ds.cloneWithRows([
-        'row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8', 'row9', 'row10', 'row11', 'row12'
-        ])
+      // dataSource: ds.cloneWithRows([
+      //   'row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8', 'row9', 'row10', 'row11', 'row12'
+      //   ])
+      dataSource: ds.cloneWithRows(this._genRows({}))
     }
   }
-  _renderRow(rowData, sectionID, rowID){
+  _genRows(){
+    var dataBlob = [];
+    for(let ii = 0; ii < THUMB_URLS.length; ii++) {
+      dataBlob.push('单元格' + ii);
+    }
+    return dataBlob;
+  }
+  _renderRow(rowData: string, sectionID: number, rowID: number){
     let imgSource = THUMB_URLS[rowID];
     return (
-      <TouchableOpacity>
-        <View style={{flex:1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+      // <TouchableOpacity>
+      //   <View>
+      //     <View style={{flex:1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+      //       <Image source={imgSource} style={{height: 80, width: 80}}/>
+      //       <Text style={{fontSize: 16}}>我是测试行号哦!{rowID}</Text>
+      //     </View>
+      //   </View>
+      // </TouchableOpacity>
+        <View style={{width: 120, height: 120}}>
           <Image source={imgSource} style={{height: 80, width: 80}}/>
-          <Text style={{fontSize: 16}}>我是测试行号哦!{rowID}</Text>
+          <Text style={{fontSize: 16}}>{rowData}</Text>
         </View>
-      </TouchableOpacity>
     );
   }
   render(){
     return(
-      <View>
         <ListView 
+          contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={true}
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}/>
-      </View>
     );
   }
 }
 
+/** MyPullToRefreshViewAndroid failed and RefreshControl Test */
+class Row extends Component {
+  render(){
+    return(
+      <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 50, backgroundColor: '#FFC0CB', margin: 10}}>
+        <Text>{this.props.data.text}</Text>
+      </View>
+    );
+  }
+}
+class MyPullToRefreshViewAndroid extends Component {
+  constructor(){
+    super();
+    this.state = {
+      isRefreshing: false,
+      loaded: 0,
+      rowData: Array.from({length: 20}).map((val, i) => ({text: '初始行' + i}))
+    }
+  }
+  render(){
+    const rows = this.state.rowData.map((row, ii) => {return <Row key={ii} data={row}/>});
+    return(
+      /** <PullToRefreshViewAndroid
+        refreshing={this.state.isRefreshing}
+        onRefresh={this._onRefresh}
+        > */
+        <ScrollView
+          refreshControl={
+            <RefreshControl 
+              refreshing={this.state.isRefreshing}
+              onRefresh={this._onRefresh.bind(this)}  //使用bind传入this
+              colors={['#ff0000']}
+            />
+          }  
+        >
+          {rows}
+        </ScrollView>
+      /** </PullToRefreshViewAndroid> */
+    );
+  }
+  _onRefresh(){
+    this.setState({isRefreshing: true});
+    setTimeout(() => {
+      //准备5行新数据
+      const rowData = Array.from({length: 5}).map((val, i) => ({text: '新增的行' + (this.state.loaded + i)})).concat(this.state.rowData);
+
+      this.setState({
+        loaded: this.state.loaded + 5,
+        isRefreshing: false,
+        rowData: rowData
+      });
+    }, 2000);
+  }
+}
+
+const DEFAULT_URL = 'http://www.lcode.org';
+/** MyWebView Test */
+class MyWebView extends Component {
+  render(){
+    return(
+      <WebView 
+        source={{uri: DEFAULT_URL}}
+      />
+    );
+  }
+}
+
+/** Navigator Test */
+
 class rnstudy extends Component {
   render() {
     return (
-      <MyListView />
+      <MyWebView />
     );
   }
 }
 
 const styles = StyleSheet.create({
-  
+  list: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flex: 1
+  },
+  row: {
+    justifyContent: 'center',
+    width: 100,
+    height: 100,
+  }
 });
 
 AppRegistry.registerComponent('rnstudy', () => rnstudy);
