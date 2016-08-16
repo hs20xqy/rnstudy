@@ -22,8 +22,11 @@ import {
   Image,
   PullToRefreshViewAndroid,
   RefreshControl,
-  WebView
+  WebView,
+  Navigator
 } from 'react-native';
+
+import FirstHomePage from './FirstHomePage'
 
 /** DrawerLayoutAndroid Test */
 class MyDrawerLayoutAndroid extends Component {
@@ -332,6 +335,7 @@ class MyPullToRefreshViewAndroid extends Component {
       loaded: 0,
       rowData: Array.from({length: 20}).map((val, i) => ({text: '初始行' + i}))
     }
+    this._onRefresh = this._onRefresh.bind(this); //在初始化方法中传递this对象
   }
   render(){
     const rows = this.state.rowData.map((row, ii) => {return <Row key={ii} data={row}/>});
@@ -344,7 +348,7 @@ class MyPullToRefreshViewAndroid extends Component {
           refreshControl={
             <RefreshControl 
               refreshing={this.state.isRefreshing}
-              onRefresh={this._onRefresh.bind(this)}  //使用bind传入this
+              onRefresh={this._onRefresh}  //使用bind传入this
               colors={['#ff0000']}
             />
           }  
@@ -381,12 +385,29 @@ class MyWebView extends Component {
   }
 }
 
-/** Navigator Test */
+/** MyNavigator Test */
+class NavButton extends Component {
+  
+}
+class NavMenu extends Component {
+  render(){
+    return(
+      <View>
+        <Text>this.props.messgae</Text>
+        <NavButton 
+          onPress={() => {
+            this.props.navi
+          }}
+        />
+      </View>
+    );
+  }
+}
 
 class rnstudy extends Component {
   render() {
     return (
-      <MyWebView />
+      <FirstHomePage />
     );
   }
 }
