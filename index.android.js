@@ -406,8 +406,24 @@ class NavMenu extends Component {
 
 class rnstudy extends Component {
   render() {
+    let defaultName = 'firstPageComponent';
+    let defaultComponent = FirstHomePage;
     return (
-      <FirstHomePage />
+      <View>
+        <Text>
+          Navigator Test
+        </Text>
+        <Navigator 
+          initialRoute={{ name: defaultName, component: defaultComponent}}
+          configureScene={(route) => {
+            return Navigator.SceneConfigs.VerticalDownSwipeJump;
+          }}
+          renderScene={(route, navigator) => {
+            let Component = route.component;
+            return <Component {...route.params} navigator={navigator}/>
+          }}
+        />
+      </View>
     );
   }
 }
